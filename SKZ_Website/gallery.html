@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>SKZ - Gallery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="gallery-style.css">
+</head>
+<body class="gallery-body">
+    <nav class="side-nav">
+        <div class="nav-toggle">SYSTEM MENU</div>
+        <ul class="nav-links">
+            <li><a href="index.html" class="nav-item"><span class="nav-num">01</span> ENTRANCE</a></li>
+            <li><a href="select.html" class="nav-item"><span class="nav-num">02</span> MEMBERS</a></li>
+            <li><a href="stages.html" class="nav-item"><span class="nav-num">03</span> STAGES</a></li>
+            <li><a href="gallery.html" class="nav-item"><span class="nav-num">04</span> GALLERY</a></li>
+            <li><a href="terminal.html" class="nav-item"><span class="nav-num">05</span> TERMINAL</a></li>
+        </ul>
+        <div class="nav-footer">STAY_SYSTEM_v5.0</div>
+    </nav>
+
+    <audio id="gallery-bgm" loop><source src="gallery_bgm.mp3" type="audio/mpeg"></audio>
+    <audio id="hover-sfx"><source src="game menu.MP3.mp3"></audio>
+    <audio id="click-sfx"><source src="Trimmed by FlexClip02.mp3"></audio>
+
+    <div class="gallery-container">
+        <header class="gallery-header">
+            <h1 class="gallery-title">IMAGE ARCHIVE</h1>
+            <div class="category-selector">
+                <button class="cat-btn active" data-category="all">ALL FILES</button>
+                <button class="cat-btn" data-category="album">ALBUM DATA</button>
+                <button class="cat-btn" data-category="member">MEMBERS</button>
+            </div>
+            <p id="audio-status" style="color: #444; font-size: 0.8rem; margin-top: 10px;">AUDIO OFFLINE - CLICK ANYWHERE TO SYNC</p>
+        </header>
+
+        <div class="gallery-grid" id="gallery-grid"></div>
+    </div>
+
+    <div class="lightbox-overlay" id="lightbox">
+        <div class="lightbox-content">
+            <span class="close-btn">&times; CLOSE</span>
+            <div class="lightbox-image-wrapper">
+                <img src="" alt="" class="lightbox-img" id="lightbox-img">
+                <div class="scanline-effect"></div>
+            </div>
+            <div class="image-info">
+                <h2 id="lightbox-title">IMAGE FILE</h2>
+                <div class="tech-lines"></div>
+                <p>STATUS: <span id="lightbox-status">CLASSIFIED</span></p>
+                <p>SOURCE: <span id="lightbox-source">SKZ_DATABASE</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const bgm = document.getElementById('gallery-bgm');
+        const hSfx = document.getElementById('hover-sfx');
+        const cSfx = document.getElementById('click-sfx');
+        const audioStatus = document.getElementById('audio-status');
+        let isAudioInit = false;
+
+        // 設定音量平衡 (背景大聲，特效小聲)
+        function initVolumes() {
+            bgm.volume = 0.7;    // 背景音樂調大
+            hSfx.volume = 0.1;   // 懸停特效微小
+            cSfx.volume = 0.2;   // 點擊特效輕微
+        }
+
+        // 點擊頁面解鎖音頻
+        window.onclick = () => {
+            if (!isAudioInit) {
+                initVolumes();
+                bgm.play().then(() => {
+                    audioStatus.innerText = "AUDIO SYSTEM ONLINE";
+                    audioStatus.style.color = "#00ff00";
+                    isAudioInit = true;
+                }).catch(e => {});
+            }
+        };
+
+        const images = [
+            { src: 'images/group1.jpg', title: 'Stray Kids Global', category: 'all', status: 'ACTIVE', source: 'SYSTEM_MAIN' },
+            { src: 'images/album1.jpg', title: 'ATE Concept', category: 'album', status: 'NEW', source: 'ATE_DATA' },
+            { src: 'images/chan.jpg', title: 'Bang Chan', category: 'member', status: 'LEADER', source: 'BIO_DATA' },
+            { src: 'images/leeknow.jpg', title: 'Lee Know', category: 'member', status: 'ACTIVE', source: 'BIO_DATA' },
+            { src: 'images/changbin.jpg', title: 'Changbin', category: 'member', status: 'ACTIVE', source: 'BIO_DATA' },
+            { src: 'images/hyunjin.jpg', title: 'Hyunjin', category: 'member', status: 'ACTIVE', source: 'BIO_DATA' },
+            { src: 'images/han.jpg', title: 'HAN', category: 'member', status: 'ACTIVE', source: 'BIO_DATA' },
+            { src: 'images/felix.jpg', title: 'Felix', category: 'member', status: 'ACTIVE', source: 'BIO_DATA' },
+            { src: 'images/seungmin.jpg', title: 'Seungmin', category: 'member', status: 'ACTIVE', source: 'BIO_DATA' },
+            { src: 'images/in.jpg', title: 'I.N', category: 'member', status: 'ACTIVE', source: 'BIO_DATA' }
+        ];
+
+        const galleryGrid = document.getElementById('gallery-grid');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+
+        function loadImages(category) {
+            galleryGrid.innerHTML = '';
+            const filtered = category === 'all' ? images : images.filter(img => img.category === category);
+            filtered.forEach(imgData => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.innerHTML = `
+                    <div class="img-container">
+                        <img src="${imgData.src}" onerror="this.src='https://via.placeholder.com/300x200?text=MISSING+FILE'">
+                    </div>
+                    <div class="item-overlay"><span>${imgData.title}</span></div>
+                `;
+                item.onmouseenter = () => { 
+                    hSfx.currentTime = 0; 
+                    hSfx.play().catch(e=>{}); 
+                };
+                item.onclick = (e) => {
+                    e.stopPropagation();
+                    cSfx.currentTime = 0; 
+                    cSfx.play().catch(e=>{});
+                    showLightbox(imgData);
+                };
+                galleryGrid.appendChild(item);
+            });
+        }
+
+        function showLightbox(imgData) {
+            lightboxImg.src = imgData.src;
+            document.getElementById('lightbox-title').innerText = imgData.title;
+            document.getElementById('lightbox-status').innerText = imgData.status;
+            document.getElementById('lightbox-source').innerText = imgData.source;
+            lightbox.classList.add('active');
+        }
+
+        document.querySelector('.close-btn').onclick = () => {
+            cSfx.currentTime = 0; 
+            cSfx.play().catch(e=>{});
+            lightbox.classList.remove('active');
+        };
+
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.onclick = (e) => {
+                cSfx.currentTime = 0; 
+                cSfx.play().catch(e=>{});
+                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                loadImages(btn.dataset.category);
+            };
+        });
+
+        // 側邊導覽列整合
+        document.querySelectorAll('.nav-item').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const navClick = new Audio('Trimmed by FlexClip02.mp3');
+                navClick.volume = 0.2;
+                navClick.play().catch(e=>{});
+                setTimeout(() => { window.location.href = this.getAttribute('href'); }, 400);
+            });
+        });
+
+        window.onload = () => loadImages('all');
+    </script>
+</body>
+</html>

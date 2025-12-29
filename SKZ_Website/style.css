@@ -1,0 +1,22 @@
+body, html { margin: 0; padding: 0; background: #000; color: white; font-family: 'Oswald', sans-serif; overflow: hidden; height: 100vh; }
+
+#overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; transition: 0.5s; }
+
+.tech-bg { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('photo/banner.jpg') center/cover no-repeat; 
+    z-index: -1; filter: contrast(1.2); 
+}
+
+.scanlines { position: absolute; width: 100%; height: 100%; background: linear-gradient(to bottom, transparent 50%, rgba(255,255,255,0.03) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; }
+
+.overlay-content { text-align: center; z-index: 1001; }
+.tech-glitch { font-size: clamp(3rem, 10vw, 7rem); text-shadow: 2px 0 #f00, -2px 0 #0ff; animation: glitch 0.3s infinite; margin: 0; }
+@keyframes glitch { 0% { transform: translate(1px, 1px); } 100% { transform: translate(-1px, -1px); } }
+
+.warning-box { margin: 20px auto; padding: 15px; border: 1px solid #f00; background: rgba(255,0,0,0.1); animation: flash 0.5s infinite alternate; }
+@keyframes flash { from { box-shadow: 0 0 5px #f00; } to { box-shadow: 0 0 20px #f00; } }
+
+#start-btn { margin-top: 20px; padding: 15px 40px; background: transparent; border: 2px solid #fff; color: #fff; font-size: 1.2rem; cursor: pointer; transition: 0.3s; }
+#start-btn:hover { background: #f00; box-shadow: 0 0 20px #f00; border-color: #f00; }
+

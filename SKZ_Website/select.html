@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>SKZ - Member Select</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="select-style.css">
+</head>
+<body class="selection-body">
+    <nav class="side-nav">
+        <div class="nav-toggle">SYSTEM MENU</div>
+        <ul class="nav-links">
+            <li><a href="index.html" class="nav-item"><span class="nav-num">01</span> ENTRANCE</a></li>
+            <li><a href="select.html" class="nav-item"><span class="nav-num">02</span> MEMBERS</a></li>
+            <li><a href="stages.html" class="nav-item"><span class="nav-num">03</span> STAGES</a></li>
+            <li><a href="gallery.html" class="nav-item"><span class="nav-num">04</span> GALLERY</a></li>
+            <li><a href="terminal.html" class="nav-item"><span class="nav-num">05</span> TERMINAL</a></li>
+        </ul>
+        <div class="nav-footer">STAY_SYSTEM_v5.0</div>
+    </nav>
+
+    <audio id="select-bgm" loop><source src="Stray Kids  God s Menu.mp3"></audio>
+    <audio id="hover-sfx"><source src="game menu.MP3.mp3"></audio>
+    <audio id="confirm-sfx"><source src="Trimmed by FlexClip.MP3.mp3"></audio>
+
+    <div class="selection-container">
+        <div class="preview-zone">
+            <div id="char-full-img" class="full-img"></div>
+            <div class="char-details">
+                <h2 id="char-name">SELECT PLAYER</h2>
+                <p id="char-desc">STRAY KIDS 5-STAR SYSTEM ACTIVE</p>
+            </div>
+        </div>
+        <div class="selector-wrapper">
+            <button class="nav-btn" onclick="scrollGrid(-1)">&#10094;</button>
+            <div class="grid-viewport" id="grid-viewport">
+                <div class="grid-zone" id="member-grid"></div>
+            </div>
+            <button class="nav-btn" onclick="scrollGrid(1)">&#10095;</button>
+        </div>
+    </div>
+
+    <div id="status-modal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="modal-char-name">NAME</h2>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="modal-img-container"><img id="modal-img" src=""></div>
+                <div class="stats-container">
+                    <h3>SYSTEM ANALYSIS</h3>
+                    <div class="stat-row"><span>RAP</span><div class="bar-bg"><div id="stat-0" class="bar-fill"></div></div></div>
+                    <div class="stat-row"><span>DANCE</span><div class="bar-bg"><div id="stat-1" class="bar-fill"></div></div></div>
+                    <div class="stat-row"><span>VOCAL</span><div class="bar-bg"><div id="stat-2" class="bar-fill"></div></div></div>
+                    <div class="stat-row"><span>CHARISMA</span><div class="bar-bg"><div id="stat-3" class="bar-fill"></div></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const members = [
+            { name: "Bang Chan", desc: "Leader & Producer", thumb: "photo/BangChan.jpg", fullImg: "photo/BangChan01.jpg", modalImg: "photo/BangChan.jpg", stats: [85, 88, 82, 98] },
+            { name: "Lee Know", desc: "Main Dancer", thumb: "photo/leeknow.jpg", fullImg: "photo/leeknow01.jpg", modalImg: "photo/leeknow.jpg", stats: [70, 99, 80, 90] },
+            { name: "Changbin", desc: "Main Rapper", thumb: "photo/changbin.jpg", fullImg: "photo/changbin01.jpg", modalImg: "photo/changbin.jpg", stats: [99, 85, 75, 95] },
+            { name: "Hyunjin", desc: "Performance Visual", thumb: "photo/hyunjin.jpg", fullImg: "photo/hyunjin01.jpg", modalImg: "photo/hyunjin.jpg", stats: [75, 98, 70, 99] },
+            { name: "HAN", desc: "All-Rounder Ace", thumb: "photo/han.jpg", fullImg: "photo/han01.jpg", modalImg: "photo/han.jpg", stats: [95, 90, 92, 94] },
+            { name: "Felix", desc: "Deep Voice Dancer", thumb: "photo/felix.jpg", fullImg: "photo/felix01.jpg", modalImg: "photo/felix.jpg", stats: [80, 95, 78, 98] },
+            { name: "Seungmin", desc: "Main Vocalist", thumb: "photo/seungmin.jpg", fullImg: "photo/seungmin01.jpg", modalImg: "photo/seungmin.jpg", stats: [60, 75, 98, 88] },
+            { name: "I.N", desc: "Maknae on Top", thumb: "photo/IN.jpg", fullImg: "photo/IN01.jpg", modalImg: "photo/IN.jpg", stats: [70, 80, 88, 92] }
+        ];
+
+        const bgm = document.getElementById('select-bgm');
+        const hSfx = document.getElementById('hover-sfx');
+        const cSfx = document.getElementById('confirm-sfx');
+        const navClickSfx = new Audio('Trimmed by FlexClip02.mp3');
+        const grid = document.getElementById('member-grid');
+
+        window.onload = () => { bgm.volume = 0.3; bgm.play().catch(() => {}); };
+
+        members.forEach(m => {
+            const card = document.createElement('div');
+            card.className = 'member-card';
+            card.innerHTML = `<img src="${m.thumb}">`;
+            card.onmouseenter = () => { hSfx.currentTime = 0; hSfx.play(); document.getElementById('char-full-img').style.backgroundImage = `url(${m.fullImg})`; document.getElementById('char-name').innerText = m.name; document.getElementById('char-desc').innerText = m.desc; };
+            card.onclick = () => { cSfx.currentTime = 0; cSfx.play(); showModal(m); };
+            grid.appendChild(card);
+        });
+
+        function showModal(m) {
+            document.getElementById('modal-char-name').innerText = m.name;
+            document.getElementById('modal-img').src = m.modalImg;
+            document.getElementById('status-modal').style.display = "flex";
+            m.stats.forEach((s, i) => { setTimeout(() => document.getElementById(`stat-${i}`).style.width = s + "%", 200); });
+        }
+        function closeModal() { document.getElementById('status-modal').style.display = "none"; document.querySelectorAll('.bar-fill').forEach(b => b.style.width = "0"); }
+        function scrollGrid(d) { document.getElementById('grid-viewport').scrollBy({ left: d * 250, behavior: 'smooth' }); }
+
+        // 側邊欄音效
+        document.querySelector('.side-nav').addEventListener('mouseenter', () => { hSfx.currentTime = 0; hSfx.play().catch(e => {}); });
+        document.querySelectorAll('.nav-item').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                navClickSfx.currentTime = 0; navClickSfx.play();
+                const target = this.getAttribute('href');
+                setTimeout(() => { window.location.href = target; }, 400);
+            });
+        });
+    </script>
+</body>
+</html>

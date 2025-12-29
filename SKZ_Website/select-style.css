@@ -1,0 +1,35 @@
+/* 此處內容同上方 style.css 中的側邊導覽列部分，並包含選角邏輯 */
+body.selection-body { margin: 0; background: #000; color: #fff; font-family: 'Oswald', sans-serif; overflow: hidden; height: 100vh; }
+.selection-container { display: flex; flex-direction: column; height: 100vh; }
+
+.preview-zone { flex: 7; position: relative; display: flex; justify-content: center; align-items: center; border-bottom: 4px solid #f00; background: #050505; }
+.full-img { position: absolute; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0.6; transition: 0.3s; }
+.char-details { position: relative; z-index: 10; text-align: center; }
+#char-name { font-size: 5rem; color: #f00; margin: 0; text-shadow: 0 0 20px #f00; }
+
+.selector-wrapper { flex: 3; background: #111; display: flex; align-items: center; padding: 0 20px; min-height: 200px; }
+.grid-viewport { flex: 1; overflow: hidden; display: flex; height: 100%; align-items: center; }
+.grid-zone { display: flex; gap: 15px; padding: 20px; min-width: min-content; }
+.member-card { width: 150px; height: 150px; border: 3px solid #333; flex-shrink: 0; cursor: pointer; transition: 0.3s; background: #222; }
+.member-card:hover { border-color: #f00; transform: scale(1.1) translateY(-10px); }
+.member-card img { width: 100%; height: 100%; object-fit: cover; }
+.nav-btn { background: none; border: 1px solid #f00; color: #f00; font-size: 2rem; cursor: pointer; padding: 10px; z-index: 100; }
+
+/* 彈窗 */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; }
+.modal-content { background: #111; border: 2px solid #f00; padding: 30px; width: 500px; box-shadow: 0 0 30px #f00; }
+.modal-body { display: flex; gap: 20px; }
+.modal-img-container img { width: 150px; border: 1px solid #f00; }
+.stats-container { flex: 1; }
+.bar-bg { background: #333; height: 10px; margin: 5px 0 15px; border-radius: 5px; overflow: hidden; }
+.bar-fill { background: #f00; height: 100%; width: 0; transition: 1s ease-out; }
+.close-btn { cursor: pointer; font-size: 2rem; }
+
+/* 側邊導覽列 (與 style.css 相同) */
+.side-nav { position: fixed; left: -220px; top: 0; width: 250px; height: 100vh; background: rgba(10,10,10,0.9); border-right: 2px solid #f00; z-index: 5000; transition: 0.4s; backdrop-filter: blur(10px); display: flex; flex-direction: column; }
+.side-nav:hover { left: 0; }
+.nav-toggle { position: absolute; right: -30px; top: 50%; transform: translateY(-50%) rotate(90deg); background: #f00; color: #fff; padding: 5px 15px; font-size: 0.7rem; cursor: pointer; }
+.nav-links { list-style: none; padding: 0; margin-top: 60px; }
+.nav-links li { padding: 15px 30px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.nav-links a { text-decoration: none; color: #888; transition: 0.3s; display: block; }
+.nav-links a:hover { color: #fff; }

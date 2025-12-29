@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>SKZ - Mission Select</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="stages-style.css">
+</head>
+<body class="stage-body">
+    <nav class="side-nav">
+        <div class="nav-toggle">SYSTEM MENU</div>
+        <ul class="nav-links">
+            <li><a href="index.html" class="nav-item"><span class="nav-num">01</span> ENTRANCE</a></li>
+            <li><a href="select.html" class="nav-item"><span class="nav-num">02</span> MEMBERS</a></li>
+            <li><a href="stages.html" class="nav-item"><span class="nav-num">03</span> STAGES</a></li>
+            <li><a href="gallery.html" class="nav-item"><span class="nav-num">04</span> GALLERY</a></li>
+            <li><a href="terminal.html" class="nav-item"><span class="nav-num">05</span> TERMINAL</a></li>
+        </ul>
+        <div class="nav-footer">STAY_SYSTEM_v5.0</div>
+    </nav>
+
+    <audio id="hover-sfx"><source src="game menu.MP3"></audio>
+    <audio id="click-sfx"><source src="Trimmed by FlexClip02.mp3"></audio>
+
+    <div class="stage-container">
+        <div class="stage-main-view">
+            <div class="video-frame-fixed" id="main-launcher">
+                <div id="player-target">
+                    <div class="placeholder-content">
+                        <div class="radar-scan"></div>
+                        <p>AWAITING DATA SYNC...</p>
+                    </div>
+                </div>
+                <div class="play-overlay" id="play-overlay">
+                    <div class="play-icon">▶ LAUNCH MISSION</div>
+                </div>
+            </div>
+
+            <div class="stage-info-panel">
+                <h3 class="system-tag">TACTICAL DATA ANALYSIS</h3>
+                <h1 id="active-title">SELECT STAGE</h1>
+                <div class="data-block">
+                    <p>STATUS: <span id="stage-status" class="val">OFFLINE</span></p>
+                    <p>LEVEL: <span id="stage-diff" class="val">---</span></p>
+                </div>
+                <div class="tech-bar"></div>
+                <p class="mission-hint">目標鎖定後，點擊上方大圖即可跳轉 YouTube。</p>
+            </div>
+        </div>
+
+        <div class="stage-selector">
+            <button class="scroll-btn" onclick="scrollStages(-1)">&#10094;</button>
+            <div class="stage-viewport" id="stage-viewport">
+                <div class="stage-grid" id="stage-grid"></div>
+            </div>
+            <button class="scroll-btn" onclick="scrollStages(1)">&#10095;</button>
+        </div>
+    </div>
+
+    <script>
+        const stages = [
+            { title: "Chk Chk Boom", id: "dBDkYofMUs4", diff: "MAX", status: "NEW MISSION" },
+            { title: "LALALALA", id: "0P0aQreFs8w", diff: "ELITE", status: "ACTIVE" },
+            { title: "MANIAC", id: "OvioeS1ZZ7o", diff: "INSANE", status: "ARCHIVED" },
+            { title: "S-Class", id: "JsOOis4bBFg", diff: "S-RANK", status: "SECURED" },
+            { title: "God's Menu", id: "TQTlCHxyuu8", diff: "LEGEND", status: "LEGENDARY" }
+        ];
+
+        let currentVideoId = "";
+        const grid = document.getElementById('stage-grid');
+        const hSfx = document.getElementById('hover-sfx');
+        const cSfx = document.getElementById('click-sfx');
+
+        stages.forEach(s => {
+            const card = document.createElement('div');
+            card.className = 'stage-card';
+            card.innerHTML = `
+                <div class="card-img" style="background-image:url('https://i.ytimg.com/vi/${s.id}/mqdefault.jpg')"></div>
+                <div class="card-label">${s.title}</div>
+            `;
+            
+            card.onmouseenter = () => { hSfx.currentTime = 0; hSfx.play().catch(e=>{}); };
+            
+            card.onclick = () => {
+                cSfx.currentTime = 0; cSfx.play().catch(e=>{});
+                currentVideoId = s.id;
+                
+                document.getElementById('active-title').innerText = s.title;
+                document.getElementById('stage-status').innerText = s.status;
+                document.getElementById('stage-diff').innerText = s.diff;
+                
+                const target = document.getElementById('player-target');
+                // 使用 Background Image 代替 <img> 標籤，這樣絕對不會放大
+                target.innerHTML = `<div class="fixed-poster" style="background-image: url('https://i.ytimg.com/vi/${s.id}/hqdefault.jpg')"></div>`;
+                
+                document.getElementById('play-overlay').style.display = "flex";
+            };
+            grid.appendChild(card);
+        });
+
+        document.getElementById('main-launcher').onclick = function() {
+            if (currentVideoId) {
+                window.open("https://www.youtube.com/watch?v=" + currentVideoId, "_blank");
+            }
+        };
+
+        function scrollStages(d) { document.getElementById('stage-viewport').scrollBy({ left: d * 300, behavior: 'smooth' }); }
+
+        document.querySelectorAll('.nav-item').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const btnSfx = new Audio('Trimmed by FlexClip02.mp3');
+                btnSfx.play().catch(e=>{});
+                setTimeout(() => { window.location.href = this.getAttribute('href'); }, 400);
+            });
+        });
+    </script>
+</body>
+</html>

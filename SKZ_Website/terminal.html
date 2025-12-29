@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>SKZ - System Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="terminal-style.css">
+</head>
+<body class="terminal-body">
+    <nav class="side-nav">
+        <div class="nav-toggle">SYSTEM MENU</div>
+        <ul class="nav-links">
+            <li><a href="index.html" class="nav-item">ENTRANCE</a></li>
+            <li><a href="select.html" class="nav-item">MEMBERS</a></li>
+            <li><a href="stages.html" class="nav-item">STAGES</a></li>
+            <li><a href="gallery.html" class="nav-item">GALLERY</a></li>
+            <li><a href="terminal.html" class="nav-item">TERMINAL</a></li>
+        </ul>
+    </nav>
+
+    <audio id="terminal-bgm" loop><source src="Terminal bgm.mp3" type="audio/mpeg"></audio>
+    <audio id="typing-sfx"><source src="game menu.MP3.mp3"></audio>
+
+    <div class="terminal-main-container">
+        <div class="system-status-bar">
+            <div class="status-left">
+                <span>STATUS: <span class="pulse-green">HEARTBEAT_SYNC_OK</span></span>
+            </div>
+            <div class="status-right">
+                <span id="clock">00:00:00</span>
+            </div>
+        </div>
+
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <div class="window-controls">
+                    <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                </div>
+                <div class="title-tag">SKZ_EMOTIONAL_INTERFACE_v6.0</div>
+            </div>
+
+            <div class="terminal-content" id="terminal-output">
+                <div class="line active-text">>>> 歡迎進入 SKZ 情感中樞系統。</div>
+                <div class="line">>>> 偵測到大量的 STAY 愛意訊號... [滿載]</div>
+                <div class="line">>>> 輸入 <span class="highlight-green">'HELP'</span> 查看所有互動代碼。</div>
+                <div class="line">>>> <span class="highlight-pink">[NEW]</span> 嘗試輸入 'LOVE' 或 'DAILY'。</div>
+                <div class="line">--------------------------------------------------</div>
+            </div>
+
+            <div class="terminal-input-zone">
+                <span class="prompt-arrow">▶</span>
+                <input type="text" id="terminal-input" placeholder="在這裡輸入指令..." autofocus autocomplete="off">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const input = document.getElementById('terminal-input');
+        const output = document.getElementById('terminal-output');
+        const typingSfx = document.getElementById('typing-sfx');
+        const bgm = document.getElementById('terminal-bgm');
+        let audioStarted = false;
+
+        typingSfx.volume = 0.1;
+        bgm.volume = 0.7;
+
+        // --- 擴展資料庫 ---
+        const loveQuotes = [
+            "BANG CHAN: '無論距離多遠，我們看的是同一個月亮。'",
+            "LEE KNOW: '如果你感到累了，就躲進我的懷裡休息吧。'",
+            "FELIX: '你的笑容是我最想守護的寶藏。'",
+            "HYUNJIN: '在我的故事裡，你永遠是唯一的主角。'",
+            "HAN: '遇見你之後，我寫的所有情歌都有了名字。'",
+            "CHANGBIN: '想成為你的盾牌，為你擋住所有的負面情緒。'",
+            "SEUNGMIN: '我會一直唱歌，直到聲音傳達到你的心底。'",
+            "I.N: '姊姊/Stay，今天也要因為我而開心地笑喔！'"
+        ];
+
+        const dailyEnergy = [
+            "🌟 今天的你已經很努力了，你是最棒的！",
+            "✨ 不要害怕失敗，Stray Kids 會一直陪在你身邊。",
+            "💫 你是獨一無二的存在，閃耀著屬於自己的光芒。",
+            "🍀 幸運正在路上，請保持微笑迎接它！"
+        ];
+
+        const globalLogs = [
+            "[Global_Stay_03]: 謝謝你們成為我生命中的光。",
+            "[Lino_Cat_Mom]: 今天看完演唱會影片，心跳還是好快！",
+            "[Felix_Sunshine]: 大家的留言都好溫暖，SKZ 也一定能感受到。",
+            "[Stay_Forever]: 無論發生什麼事，我們都會在你們身後。"
+        ];
+
+        function startAudio() {
+            if (!audioStarted) {
+                bgm.play().then(() => { audioStarted = true; }).catch(() => {});
+            }
+        }
+
+        document.addEventListener('click', startAudio);
+
+        function getLocalMessages() {
+            const msgs = localStorage.getItem('skz_fan_logs');
+            return msgs ? JSON.parse(msgs) : [];
+        }
+
+        function saveMessage(text) {
+            const msgs = getLocalMessages();
+            msgs.push({ time: new Date().toLocaleString(), content: text });
+            localStorage.setItem('skz_fan_logs', JSON.stringify(msgs));
+        }
+
+        input.addEventListener('keydown', function(e) {
+            startAudio();
+            if (e.key === 'Enter') {
+                const rawCmd = this.value.trim();
+                if (rawCmd !== '') handleCommand(rawCmd);
+                this.value = '';
+            } else {
+                typingSfx.currentTime = 0;
+                typingSfx.play().catch(()=>{});
+            }
+        });
+
+        function handleCommand(rawCmd) {
+            const cmd = rawCmd.toLowerCase();
+            const args = rawCmd.split(' ');
+            const mainCmd = args[0].toLowerCase();
+            
+            addLine(`<span class="cmd-echo">STAY@SKZ:~$</span> ${rawCmd}`, 'user-line');
+            
+            setTimeout(() => {
+                switch(mainCmd) {
+                    case 'help':
+                        addLine("--- 互動代碼清單 ---");
+                        addLine("> LOVE      : 獲取成員的甜言蜜語");
+                        addLine("> DAILY     : 今日正能量語錄");
+                        addLine("> READ      : 瀏覽您的留言紀錄");
+                        addLine("> WORLD     : 查看全球 Stay 的溫馨日誌");
+                        addLine("> SHOUTOUT  : [訊息] 留下你的愛意");
+                        addLine("> CLEAR     : 清空控制台");
+                        break;
+                    
+                    case 'love':
+                        const quote = loveQuotes[Math.floor(Math.random() * loveQuotes.length)];
+                        addLine("正在掃描成員的心跳頻率...", "active-text");
+                        setTimeout(() => addLine(`>> 收到新訊息: <span class="highlight-pink">${quote}</span>`), 600);
+                        break;
+
+                    case 'daily':
+                        const energy = dailyEnergy[Math.floor(Math.random() * dailyEnergy.length)];
+                        addLine("正在生成今日份的勇氣...", "active-text");
+                        setTimeout(() => addLine(`>> <span class="highlight-green">${energy}</span>`), 500);
+                        break;
+
+                    case 'world':
+                        addLine("正在連線至全球 Stay 伺服器...", "active-text");
+                        setTimeout(() => {
+                            globalLogs.forEach(log => addLine(log));
+                        }, 500);
+                        break;
+
+                    case 'shoutout':
+                        if(args.length < 2) {
+                            addLine("錯誤: 請輸入內容。範例: SHOUTOUT 我愛你們", "error-text");
+                        } else {
+                            const userText = rawCmd.substring(rawCmd.indexOf(' ') + 1);
+                            saveMessage(userText);
+                            addLine("正在將您的愛意加密並傳送...", "active-text");
+                            setTimeout(() => addLine(`>> 成功: "${userText}" 已存檔。`, "highlight-green"), 500);
+                        }
+                        break;
+
+                    case 'read':
+                        const history = getLocalMessages();
+                        addLine("正在調取您的個人檔案...", "active-text");
+                        if (history.length === 0) {
+                            setTimeout(() => addLine(">> 目前尚無紀錄。快去輸入 SHOUTOUT 吧！"), 500);
+                        } else {
+                            setTimeout(() => {
+                                history.forEach((item, index) => addLine(`[${item.time}] AGENT_${index + 1}: ${item.content}`));
+                                output.scrollTo({ top: output.scrollHeight, behavior: 'smooth' });
+                            }, 500);
+                        }
+                        break;
+
+                    case 'clear':
+                        output.innerHTML = '';
+                        break;
+
+                    default:
+                        addLine(`系統無法識別指令: ${mainCmd}`, "error-text");
+                }
+                output.scrollTo({ top: output.scrollHeight, behavior: 'smooth' });
+            }, 250);
+        }
+
+        function addLine(text, className = '') {
+            const div = document.createElement('div');
+            div.className = 'line ' + className;
+            div.innerHTML = text;
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+    </script>
+</body>
+</html>

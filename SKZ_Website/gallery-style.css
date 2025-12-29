@@ -1,0 +1,126 @@
+body.gallery-body {
+    margin: 0; background: #000; color: #fff; 
+    font-family: 'Oswald', sans-serif; overflow-x: hidden;
+}
+
+.gallery-container {
+    max-width: 1400px; margin: 0 auto; padding: 40px 20px;
+}
+
+/* --- 標題區：移除強烈抖動，改為穩定紅光 --- */
+.gallery-header {
+    text-align: center; margin-bottom: 50px; 
+    border-bottom: 2px solid #f00; padding-bottom: 20px;
+    position: relative;
+}
+.gallery-title {
+    font-size: 3.5rem; color: #f00; 
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.7); 
+    letter-spacing: 5px;
+    margin: 0;
+    /* 移除強烈 animation，改為極輕微的呼吸感 */
+    animation: glow-soft 3s infinite alternate;
+}
+@keyframes glow-soft {
+    from { text-shadow: 0 0 10px #f00; }
+    to { text-shadow: 0 0 20px #f00, 0 0 5px #fff; }
+}
+
+.category-selector { margin-top: 20px; }
+.cat-btn {
+    background: #111; color: #888; border: 1px solid #444; padding: 10px 25px;
+    margin: 0 5px; cursor: pointer; font-size: 0.9rem; letter-spacing: 2px;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.cat-btn:hover, .cat-btn.active {
+    background: #f00; color: #fff; border-color: #f00; 
+    box-shadow: 0 0 15px rgba(255,0,0,0.4);
+}
+
+/* --- 網格與圖片：改為穩定淡入 --- */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.gallery-item {
+    background: #0a0a0a; border: 1px solid #222; overflow: hidden;
+    position: relative; cursor: pointer; transition: 0.4s ease;
+}
+.gallery-item:hover {
+    border-color: #f00; transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(255,0,0,0.2);
+}
+
+.img-container { width: 100%; height: 200px; overflow: hidden; }
+.gallery-item img {
+    width: 100%; height: 100%; object-fit: cover; 
+    filter: grayscale(1) brightness(0.8);
+    transition: 0.5s ease;
+}
+.gallery-item:hover img { filter: grayscale(0) brightness(1); transform: scale(1.05); }
+
+.item-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.9));
+    color: #fff; padding: 15px; opacity: 0; transition: 0.3s;
+}
+.gallery-item:hover .item-overlay { opacity: 1; }
+
+/* --- 彈窗預覽：移除閃爍特效 --- */
+.lightbox-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center;
+    z-index: 6000; opacity: 0; pointer-events: none; transition: opacity 0.4s;
+    backdrop-filter: blur(10px);
+}
+.lightbox-overlay.active { opacity: 1; pointer-events: all; }
+
+.lightbox-content {
+    background: #000; border: 1px solid #f00; 
+    display: flex; flex-direction: column; width: 85%; max-width: 900px;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute; top: -40px; right: 0; 
+    color: #f00; font-size: 1rem; cursor: pointer;
+    letter-spacing: 2px; transition: 0.3s;
+}
+.close-btn:hover { color: #fff; }
+
+.lightbox-image-wrapper {
+    position: relative; width: 100%; background: #050505;
+    /* 移除會導致抖動的強烈掃描線 */
+}
+.lightbox-img {
+    width: 100%; max-height: 70vh; object-fit: contain;
+    display: block; margin: 0 auto;
+}
+
+/* 改為超淡且緩慢的掃描線，僅在背景流動 */
+.scanline-effect {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, transparent 0%, rgba(255,0,0,0.02) 50%, transparent 100%);
+    background-size: 100% 200%; animation: slow-scan 8s infinite linear;
+    pointer-events: none;
+}
+@keyframes slow-scan {
+    0% { background-position-y: 0%; }
+    100% { background-position-y: 200%; }
+}
+
+.image-info { padding: 30px; background: #0a0a0a; border-top: 1px solid #222; }
+#lightbox-title { font-size: 2rem; color: #f00; margin: 0 0 10px 0; letter-spacing: 2px; }
+.image-info p { font-size: 0.9rem; color: #666; margin: 5px 0; }
+.image-info span { color: #aaa; }
+
+/* --- 側邊導覽列同步 --- */
+.side-nav { position: fixed; left: -220px; top: 0; width: 250px; height: 100vh; background: rgba(10,10,10,0.95); border-right: 2px solid #f00; z-index: 7000; transition: 0.4s; backdrop-filter: blur(10px); display: flex; flex-direction: column; }
+.side-nav:hover { left: 0; }
+.nav-toggle { position: absolute; right: -30px; top: 50%; transform: translateY(-50%) rotate(90deg); background: #f00; color: #fff; padding: 5px 15px; font-size: 0.7rem; cursor: pointer; }
+.nav-links { list-style: none; padding: 0; margin-top: 60px; }
+.nav-links li { padding: 15px 30px; }
+.nav-links a { text-decoration: none; color: #888; transition: 0.3s; display: block; }
+.nav-links a:hover { color: #fff; }
